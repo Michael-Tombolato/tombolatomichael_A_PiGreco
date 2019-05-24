@@ -10,6 +10,7 @@ byte cuore[8] = {B00000, B01010, B11111, B11111, B11111, B01110, B00100, B00000}
 int punti = 0;
 double tempo = 3000;
 int posizione = 0;
+int vite = 3;
 
 void setup() {
   // put your setup code here, to run once:
@@ -20,62 +21,83 @@ void setup() {
   pinMode(button5, INPUT);
   lcd.begin(16, 2);
   lcd.createChar(0, cuore);
-  randomSeed(analogRead(0));
-  for (int i = 0; i < 5; i++)
-  {
-    lcd.setCursor(0, 1);
-    lcd.write("b");
-  }
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-  BottoniOff();
-  StampaVitePunti();
-  StampaPiGreco();
-  PremiBottone();
-  BottoniOff();
+  if (vite != 0)
+  {
+   BottoniOff();
+   StampaVitePunti();
+   lcd.write(punti);
+   StampaPiGreco();
+   PremiBottone();
+   BottoniOff(); 
+  }
+  else
+  {
+    lcd.clear();
+    lcd.setCursor(5,0);
+    lcd.write("Hai perso");
+    delay(5000);
+    vite = 3;
+  }
 }
 
 void StampaVitePunti()
 {
   lcd.setCursor(0,0);
-  lcd.write(byte(0));
-  lcd.write(byte(0));
-  lcd.write(byte(0));
-  lcd.setCursor(7, 0);
-  lcd.write("Punti: " + punti);
+  for (int i = vite; i > 0; i--)
+  {
+    lcd.write(byte(0));
+  }
+  lcd.setCursor(6, 0);
+  lcd.write("Punti: ");
+  lcd.setCursor(13, 0);
+  //lcd.write(punti);
 }
 
 void StampaPiGreco()
 {
-  posizione = random(6, 12);
+  randomSeed(analogRead(0));
+  posizione = random(6, 11);
   lcd.setCursor(posizione, 1);
   lcd.write("a");
   delay(tempo);
   lcd.clear();
 }
+
 void PremiBottone()
 {
+  bool punto = false;
   if (posizione == 6 && digitalRead(button1) == HIGH)
   {
     punti++;
+    punto = true;
   }
   else if (posizione == 7 && digitalRead(button2) == HIGH)
   {
     punti++;
+    punto = true;
   }
   else if (posizione == 8 && digitalRead(button3) == HIGH)
   {
     punti++;
+    punto = true;
   }
   else if (posizione == 9 && digitalRead(button4) == HIGH)
   {
     punti++;
+    punto = true;
   }
   else if (posizione == 10 && digitalRead(button5) == HIGH)
   {
     punti++;
+    punto = true;
+  }
+  if (!punto)
+  {
+    vite--;
   }
 }
 
